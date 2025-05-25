@@ -21,6 +21,7 @@ export interface InvoiceData {
   customerAddress: string;
   customerGST: string;
   invoiceDate: string;
+  vehicleNumber: string;
   items: InvoiceItem[];
   subtotal: number;
   gst: number;

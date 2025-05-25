@@ -41,6 +41,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoiceData }) => {
         <p className="font-medium">{customerName}</p>
         <p className="text-gray-600 whitespace-pre-line">{customerAddress}</p>
         {customerGST && <p className="text-gray-600">GSTIN: {customerGST}</p>}
+        <p className="text-gray-600">Vehicle Number: {invoiceData.vehicleNumber}</p>
       </div>
 
       <div className="mb-8">

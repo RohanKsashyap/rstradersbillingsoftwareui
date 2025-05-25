@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import  { useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { Calculator, Printer, Save, FileText, Plus, Minus, Trash2 } from 'lucide-react';
 import InvoiceTemplate from './components/InvoiceTemplate';
@@ -9,6 +9,7 @@ function App() {
   const [customerName, setCustomerName] = useState('');
   const [customerAddress, setCustomerAddress] = useState('');
   const [customerGST, setCustomerGST] = useState('');
+  const [vehicleNumber, setVehicleNumber] = useState('');
   const [invoiceDate, setInvoiceDate] = useState(
     new Date().toISOString().substring(0, 10)
   );
@@ -74,6 +75,7 @@ function App() {
       customerAddress,
       customerGST,
       invoiceDate,
+      vehicleNumber,
       items,
       subtotal: calculateSubtotal(),
       gst: calculateGST(),
@@ -153,6 +155,18 @@ function App() {
                     onChange={(e) => setCustomerGST(e.target.value)}
                     className="w-full p-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="29AABCS1429B1Z1"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Vehicle Number
+                  </label>
+                  <input
+                    type="text"
+                    value={vehicleNumber}
+                    onChange={(e) => setVehicleNumber(e.target.value)}
+                    className="w-full p-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Vehicle Number"
                   />
                 </div>
                 
@@ -305,6 +319,7 @@ function App() {
                   setCustomerName('');
                   setCustomerAddress('');
                   setCustomerGST('');
+                  setVehicleNumber('');
                   setInvoiceDate(new Date().toISOString().substring(0, 10));
                   setItems([{ id: 1, description: '', hsn: '', quantity: 1, rate: 0, gstRate: 18 }]);
                 }}
@@ -354,6 +369,7 @@ function App() {
                 customerAddress,
                 customerGST,
                 invoiceDate,
+                vehicleNumber,
                 items,
                 subtotal: calculateSubtotal(),
                 gst: calculateGST(),
