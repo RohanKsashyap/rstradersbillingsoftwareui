@@ -2,6 +2,7 @@ import  { useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { Calculator, Printer, Save, FileText, Plus, Minus, Trash2 } from 'lucide-react';
 import InvoiceTemplate from './components/InvoiceTemplate';
+import ClientManagement from './components/ClientManagement';
 import { InvoiceData, InvoiceItem } from './types';
 
 function App() {
@@ -23,6 +24,12 @@ function App() {
   const handlePrint = useReactToPrint({
     content: () => invoiceRef.current,
   });
+
+  const handleClientSelect = (client: any) => {
+    setCustomerName(client.name);
+    setCustomerAddress(client.address);
+    setCustomerGST(client.gstin);
+  };
 
   const addItem = () => {
     const newItem: InvoiceItem = {
@@ -131,6 +138,7 @@ function App() {
             
             <div className="mb-6">
               <h2 className="text-lg font-semibold text-gray-700 mb-3">Customer Details</h2>
+              <ClientManagement onClientSelect={handleClientSelect} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
