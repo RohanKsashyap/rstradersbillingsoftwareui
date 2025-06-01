@@ -4,8 +4,6 @@ import axios from 'axios';
 interface Client {
     _id: string;
     name: string;
-    email: string;
-    phone: string;
     address: string;
     gstin: string;
 }
@@ -14,14 +12,14 @@ interface ClientManagementProps {
     onClientSelect: (client: Client) => void;
 }
 
+const API_URL = 'https://rsbilling-ui-backend-production.up.railway.app';
+
 const ClientManagement: React.FC<ClientManagementProps> = ({ onClientSelect }) => {
     const [clients, setClients] = useState<Client[]>([]);
     const [selectedClient, setSelectedClient] = useState<string>('');
     const [showAddForm, setShowAddForm] = useState(false);
     const [newClient, setNewClient] = useState({
         name: '',
-        email: '',
-        phone: '',
         address: '',
         gstin: ''
     });
@@ -32,7 +30,7 @@ const ClientManagement: React.FC<ClientManagementProps> = ({ onClientSelect }) =
 
     const fetchClients = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/clients');
+            const response = await axios.get(`${API_URL}/api/clients`);
             setClients(response.data);
         } catch (error) {
             console.error('Error fetching clients:', error);
@@ -50,13 +48,11 @@ const ClientManagement: React.FC<ClientManagementProps> = ({ onClientSelect }) =
     const handleAddClient = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/api/clients', newClient);
+            const response = await axios.post(`${API_URL}/api/clients`, newClient);
             setClients([...clients, response.data]);
             setShowAddForm(false);
             setNewClient({
                 name: '',
-                email: '',
-                phone: '',
                 address: '',
                 gstin: ''
             });
@@ -85,22 +81,6 @@ const ClientManagement: React.FC<ClientManagementProps> = ({ onClientSelect }) =
                             placeholder="Name"
                             value={newClient.name}
                             onChange={(e) => setNewClient({...newClient, name: e.target.value})}
-                            className="border p-2 rounded"
-                            required
-                        />
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={newClient.email}
-                            onChange={(e) => setNewClient({...newClient, email: e.target.value})}
-                            className="border p-2 rounded"
-                            required
-                        />
-                        <input
-                            type="tel"
-                            placeholder="Phone"
-                            value={newClient.phone}
-                            onChange={(e) => setNewClient({...newClient, phone: e.target.value})}
                             className="border p-2 rounded"
                             required
                         />
