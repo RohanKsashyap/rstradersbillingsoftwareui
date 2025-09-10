@@ -119,7 +119,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoiceData }) => {
             <span className="font-medium">₹{subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">GST:</span>
+            <span className="text-gray-600">IGST:</span>
             <span className="font-medium">₹{gst.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-lg font-bold border-t border-gray-200 pt-2">
