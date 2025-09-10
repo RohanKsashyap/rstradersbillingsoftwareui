@@ -11,10 +11,15 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoiceData }) => {
     customerName,
     customerAddress,
     customerGST,
+    customerState,
     invoiceDate,
     items,
     subtotal,
     gst,
+    cgst = 0,
+    sgst = 0,
+    igst = 0,
+    taxRate = 5,
     total,
     companyDetails
   } = invoiceData;
@@ -41,6 +46,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoiceData }) => {
         <p className="font-medium">{customerName}</p>
         <p className="text-gray-600 whitespace-pre-line">{customerAddress}</p>
         {customerGST && <p className="text-gray-600">GSTIN: {customerGST}</p>}
+        {customerState && <p className="text-gray-600">State: {customerState}</p>}
         <p className="text-gray-600">Vehicle Number: {invoiceData.vehicleNumber}</p>
       </div>
 
@@ -119,9 +125,26 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoiceData }) => {
             <span className="font-medium">₹{subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">IGST:</span>
-            <span className="font-medium">₹{gst.toFixed(2)}</span>
+            <span className="text-gray-600">Tax Rate:</span>
+            <span className="font-medium">{taxRate}%</span>
           </div>
+          {igst > 0 ? (
+            <div className="flex justify-between">
+              <span className="text-gray-600">IGST:</span>
+              <span className="font-medium">₹{igst.toFixed(2)}</span>
+            </div>
+          ) : (
+            <>
+              <div className="flex justify-between">
+                <span className="text-gray-600">CGST:</span>
+                <span className="font-medium">₹{cgst.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">SGST:</span>
+                <span className="font-medium">₹{sgst.toFixed(2)}</span>
+              </div>
+            </>
+          )}
           <div className="flex justify-between text-lg font-bold border-t border-gray-200 pt-2">
             <span>Total:</span>
             <span>₹{total.toFixed(2)}</span>

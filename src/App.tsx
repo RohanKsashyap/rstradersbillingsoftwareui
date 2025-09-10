@@ -10,6 +10,8 @@ function App() {
   const [customerName, setCustomerName] = useState('');
   const [customerAddress, setCustomerAddress] = useState('');
   const [customerGST, setCustomerGST] = useState('');
+  const [customerState, setCustomerState] = useState('Himachal Pradesh');
+  const [taxRate, setTaxRate] = useState<number>(5);
   const [vehicleNumber, setVehicleNumber] = useState('');
   const [invoiceDate, setInvoiceDate] = useState(
     new Date().toISOString().substring(0, 10)
@@ -29,6 +31,7 @@ function App() {
     setCustomerName(client.name);
     setCustomerAddress(client.address);
     setCustomerGST(client.gstin);
+    if (client.state) setCustomerState(client.state);
   };
 
   const addItem = () => {
@@ -64,11 +67,28 @@ function App() {
     return items.reduce((sum, item) => sum + item.quantity * item.rate, 0);
   };
 
+  // Calculate GST at item level using chosen taxRate (5% default)
+  // We keep per-item gstRate selector for flexibility, but for this feature we apply uniform taxRate
   const calculateGST = () => {
+    const rate = taxRate; // e.g., 5
     return items.reduce((sum, item) => {
       const itemTotal = item.quantity * item.rate;
-      return sum + (itemTotal * item.gstRate) / 100;
+      return sum + (itemTotal * rate) / 100;
     }, 0);
+  };
+
+  const isIntraState = () => {
+    // Company is in Himachal Pradesh (per companyDetails). If customerState is Himachal Pradesh → intra-state
+    return (customerState || '').toLowerCase().includes('himachal');
+  };
+
+  const calculateSplitTaxes = () => {
+    const gstAmount = calculateGST();
+    if (isIntraState()) {
+      const half = gstAmount / 2;
+      return { cgst: half, sgst: half, igst: 0 };
+    }
+    return { cgst: 0, sgst: 0, igst: gstAmount };
   };
 
   const calculateTotal = () => {
@@ -76,16 +96,22 @@ function App() {
   };
 
   const generateInvoice = () => {
+    const { cgst, sgst, igst } = calculateSplitTaxes();
     const invoiceData: InvoiceData = {
       invoiceNumber,
       customerName,
       customerAddress,
       customerGST,
+      customerState,
       invoiceDate,
       vehicleNumber,
       items,
       subtotal: calculateSubtotal(),
-      gst: calculateGST(),
+      cgst,
+      sgst,
+      igst,
+      taxRate,
+      gst: calculateGST(), // aggregate
       total: calculateTotal(),
       companyDetails: {
         name: 'RS Traders & Suppliers',
@@ -165,6 +191,71 @@ function App() {
                     placeholder="29AABCS1429B1Z1"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Customer State
+                  </label>
+                  <select
+                    value={customerState}
+                    onChange={(e) => setCustomerState(e.target.value)}
+                    className="w-full p-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option>Himachal Pradesh</option>
+                    <option>Jammu and Kashmir</option>
+                    <option>Punjab</option>
+                    <option>Haryana</option>
+                    <option>Delhi</option>
+                    <option>Uttar Pradesh</option>
+                    <option>Uttarakhand</option>
+                    <option>Rajasthan</option>
+                    <option>Maharashtra</option>
+                    <option>Madhya Pradesh</option>
+                    <option>Gujarat</option>
+                    <option>Bihar</option>
+                    <option>West Bengal</option>
+                    <option>Karnataka</option>
+                    <option>Tamil Nadu</option>
+                    <option>Kerala</option>
+                    <option>Telangana</option>
+                    <option>Andhra Pradesh</option>
+                    <option>Odisha</option>
+                    <option>Assam</option>
+                    <option>Chandigarh</option>
+                    <option>Goa</option>
+                    <option>Jharkhand</option>
+                    <option>Chhattisgarh</option>
+                    <option>Arunachal Pradesh</option>
+                    <option>Sikkim</option>
+                    <option>Meghalaya</option>
+                    <option>Mizoram</option>
+                    <option>Nagaland</option>
+                    <option>Manipur</option>
+                    <option>Tripura</option>
+                    <option>Puducherry</option>
+                    <option>Lakshadweep</option>
+                    <option>Andaman and Nicobar Islands</option>
+                    <option>Ladakh</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tax Rate
+                  </label>
+                  <select
+                    value={taxRate}
+                    onChange={(e) => setTaxRate(parseInt(e.target.value))}
+                    className="w-full p-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value={0}>0%</option>
+                    <option value={5}>5%</option>
+                    <option value={12}>12%</option>
+                    <option value={18}>18%</option>
+                    <option value={28}>28%</option>
+                  </select>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Vehicle Number
@@ -310,9 +401,26 @@ function App() {
                   <span className="font-medium">₹{calculateSubtotal().toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">GST:</span>
-                  <span className="font-medium">₹{calculateGST().toFixed(2)}</span>
+                  <span className="text-gray-600">Tax Rate:</span>
+                  <span className="font-medium">{taxRate}%</span>
                 </div>
+                {isIntraState() ? (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">CGST ( {taxRate/2}% ):</span>
+                      <span className="font-medium">₹{(calculateGST()/2).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">SGST ( {taxRate/2}% ):</span>
+                      <span className="font-medium">₹{(calculateGST()/2).toFixed(2)}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">IGST ( {taxRate}% ):</span>
+                    <span className="font-medium">₹{calculateGST().toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-lg font-bold border-t border-gray-200 pt-2">
                   <span>Total:</span>
                   <span>₹{calculateTotal().toFixed(2)}</span>
@@ -376,10 +484,13 @@ function App() {
                 customerName,
                 customerAddress,
                 customerGST,
+                customerState,
                 invoiceDate,
                 vehicleNumber,
                 items,
                 subtotal: calculateSubtotal(),
+                ...calculateSplitTaxes(),
+                taxRate,
                 gst: calculateGST(),
                 total: calculateTotal(),
                 companyDetails: {
