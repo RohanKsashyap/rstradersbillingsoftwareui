@@ -114,11 +114,11 @@ function App() {
       gst: calculateGST(), // aggregate
       total: calculateTotal(),
       companyDetails: {
-        name: 'RS Traders & Suppliers',
-        address: ' VILLAGE-PEKHUBELA, DIST-UNA, State-HIMACHAL PRADESH, PIN-174303',
-        gst: '02JVDPK0923D1Z4',
-        phone: '+91 7087383637',
-        email: 'info@rstraders.com'
+        name: 'M/s MAA LAKSHMI GROUP',
+        address: 'Friends Colony, Amb Road, Una, Una, Una, Una, Himachal Pradesh, 174303',
+        gst: '02ABSFM8235A1ZF',
+        phone: '+91 9815942590',
+        email: 'info@maalaxmi.com'
       }
     };
     
